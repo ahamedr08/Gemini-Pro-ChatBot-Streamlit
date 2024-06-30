@@ -10,3 +10,6 @@ The Gemini-Pro Streamlit Chatbot is designed to provide an interactive conversat
 - Easy-to-use web interface built with Streamlit
 - Customizable responses and behavior
 - Scalable and easy to deploy
+- 
+## Web Application
+You can access the live web application [here](https://ahamedr08-gemini-pro-chatbot.streamlit.app/).
