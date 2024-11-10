@@ -6,11 +6,11 @@ import google.generativeai as gen_ai
 # Load environment variables
 load_dotenv()
 
-# Configure Streamlit page settings with custom theme
+# Configure Streamlit page settings
 st.set_page_config(
-    page_title="InterviewIQ",
-    page_icon=":brain:",
-    layout="centered",
+    page_title="Chat with Gemini-Pro!",
+    page_icon=":brain:",  # Favicon emoji
+    layout="centered",  # Page layout option
 )
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -19,68 +19,37 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 gen_ai.configure(api_key=GOOGLE_API_KEY)
 model = gen_ai.GenerativeModel('gemini-pro')
 
-# Custom CSS for background and styling
-st.markdown("""
-    <style>
-        /* Full page background image */
-        body {
-            background-image: url('https://example.com/background-image.jpg'); /* Replace with your image URL */
-            background-size: cover;
-            background-position: center;
-        }
-        
-        /* Custom styling for chat messages */
-        .user-message {
-            background-color: rgba(232, 245, 255, 0.9);
-            color: #1e3a5f;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-            font-weight: bold;
-        }
-        
-        .assistant-message {
-            background-color: rgba(245, 232, 255, 0.9);
-            color: #3a1e5f;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-            font-style: italic;
-        }
-        
-        /* Center title with shadow for effect */
-        .main-title {
-            text-align: center;
-            font-size: 36px;
-            color: #ffffff;
-            text-shadow: 2px 2px 8px #000000;
-            padding: 20px;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# Display the chatbot's title with vibrant design
-st.markdown("<h1 class='main-title'>InterviewIQ</h1>", unsafe_allow_html=True)
+# Function to translate roles between Gemini-Pro and Streamlit terminology
+def translate_role_for_streamlit(user_role):
+    if user_role == "model":
+        return "assistant"
+    else:
+        return user_role
 
 # Initialize chat session in Streamlit if not already present
 if "chat_session" not in st.session_state:
-    st.session_state.chat_session = model.start_chat(history=[])
-    # Add initial welcome message from AI
-    welcome_message = ("Hello, and welcome to InterviewIQ. I’ll be your interviewer today, "
-                       "guiding you through technical and interpersonal questions aligned with the "
-                       "job description you provided. Please begin by introducing yourself.")
-    st.session_state.chat_session.history.append({"role": "model", "parts": [{"text": welcome_message}]})
+    # Start the chat session with an initial welcome message
+    st.session_state.chat_session = model.start_chat(history=[
+        {"role": "model", "content": "Hello, and welcome to InterviewIQ. I’ll be your interviewer today, guiding you through technical and interpersonal questions aligned with the job description you provided. Please begin by introducing yourself."}
+    ])
 
-# Display chat history with the initial welcome message
+# Display the chatbot's title on the page
+st.title("🤖 InterviewIQ")
+
+# Display the chat history
 for message in st.session_state.chat_session.history:
-    message_class = "assistant-message" if translate_role_for_streamlit(message["role"]) == "assistant" else "user-message"
-    st.markdown(f"<div class='{message_class}'>{message['parts'][0]['text']}</div>", unsafe_allow_html=True)
+    with st.chat_message(translate_role_for_streamlit(message["role"])):
+        st.markdown(message["content"])
 
 # Input field for user's message
-user_prompt = st.text_input("💬 Ask anything about interviews!", "")
+user_prompt = st.chat_input("Ask AI...")
 if user_prompt:
-    st.markdown(f"<div class='user-message'>{user_prompt}</div>", unsafe_allow_html=True)
-    # Send message to Gemini-Pro and retrieve response
+    # Add user's message to chat and display it
+    st.chat_message("user").markdown(user_prompt)
+
+    # Send user's message to Gemini-Pro and get the response
     gemini_response = st.session_state.chat_session.send_message(user_prompt)
+
     # Display Gemini-Pro's response
-    st.markdown(f"<div class='assistant-message'>{gemini_response.text}</div>", unsafe_allow_html=True)
+    with st.chat_message("assistant"):
+        st.markdown(gemini_response.text)
