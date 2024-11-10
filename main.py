@@ -8,7 +8,7 @@ load_dotenv()
 
 # Configure Streamlit page settings with custom theme
 st.set_page_config(
-    page_title="InterviewIQ",
+    page_title="🤖 InterviewIQ",
     page_icon=":brain:",
     layout="centered",
 )
