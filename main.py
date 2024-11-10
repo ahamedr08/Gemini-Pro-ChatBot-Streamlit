@@ -28,9 +28,9 @@ def translate_role_for_streamlit(user_role):
 
 # Initialize chat session in Streamlit if not already present
 if "chat_session" not in st.session_state:
-    # Start the chat session with an initial welcome message
+    # Start the chat session with a structured welcome message
     st.session_state.chat_session = model.start_chat(history=[
-        {"role": "model", "content": "Hello, and welcome to InterviewIQ. I’ll be your interviewer today, guiding you through technical and interpersonal questions aligned with the job description you provided. Please begin by introducing yourself."}
+        {"role": "assistant", "content": "Hello, and welcome to InterviewIQ. I’ll be your interviewer today, guiding you through technical and interpersonal questions aligned with the job description you provided. Please begin by introducing yourself."}
     ])
 
 # Display the chatbot's title on the page
