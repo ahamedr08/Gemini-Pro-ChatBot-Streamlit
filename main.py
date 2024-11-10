@@ -9,8 +9,8 @@ load_dotenv()
 # Configure Streamlit page settings
 st.set_page_config(
     page_title="Chat with Gemini-Pro!",
-    page_icon=":brain:",  # Favicon emoji
-    layout="centered",     # Page layout option
+    page_icon=":brain:",
+    layout="centered",
 )
 
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -23,16 +23,19 @@ model = gen_ai.GenerativeModel('gemini-pro')
 def translate_role_for_streamlit(user_role):
     return "assistant" if user_role == "model" else user_role
 
-# Initialize chat session and welcome message
+# Initialize chat session in Streamlit if not already present
 if "chat_session" not in st.session_state:
     st.session_state.chat_session = model.start_chat(history=[])
-    welcome_message = "Hello, and welcome to InterviewIQ. I’ll be your interviewer today, guiding you through technical and interpersonal questions aligned with the job description you provided. Please begin by introducing yourself."
-    st.session_state.chat_session.history.append(
-        gen_ai.Message(role="model", parts=[gen_ai.MessagePart(text=welcome_message)])
-    )
+    st.session_state.welcome_shown = False  # Flag to control welcome message display
 
 # Display the chatbot's title on the page
 st.title("🤖 InterviewIQ")
+
+# Display the welcome message if it's the start of the session
+if not st.session_state.welcome_shown:
+    with st.chat_message("assistant"):
+        st.markdown("Hello, and welcome to InterviewIQ. I’ll be your interviewer today, guiding you through technical and interpersonal questions aligned with the job description you provided. Please begin by introducing yourself.")
+    st.session_state.welcome_shown = True  # Ensure welcome message shows only once
 
 # Display the chat history
 for message in st.session_state.chat_session.history:
