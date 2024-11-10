@@ -33,14 +33,21 @@ st.title("🤖 InterviewIQ")
 
 # Display the welcome message if it's the start of the session
 if not st.session_state.welcome_shown:
+    # Add the welcome message to chat history
+    st.session_state.chat_session.history.append({
+        "role": "model",
+        "parts": [{"text": "Hello, and welcome to InterviewIQ. I’ll be your interviewer today, guiding you through technical and interpersonal questions aligned with the job description you provided. Please begin by introducing yourself."}]
+    })
+    # Show the message in the UI
     with st.chat_message("assistant"):
-        st.markdown("Hello, and welcome to InterviewIQ. I’ll be your interviewer today, guiding you through technical and interpersonal questions aligned with the job description you provided. Please begin by introducing yourself.")
+        st.markdown(st.session_state.chat_session.history[-1]["parts"][0]["text"])
+    
     st.session_state.welcome_shown = True  # Ensure welcome message shows only once
 
 # Display the chat history
 for message in st.session_state.chat_session.history:
-    with st.chat_message(translate_role_for_streamlit(message.role)):
-        st.markdown(message.parts[0].text)
+    with st.chat_message(translate_role_for_streamlit(message["role"])):
+        st.markdown(message["parts"][0]["text"])
 
 # Input field for user's message
 user_prompt = st.chat_input("Ask AI...")
