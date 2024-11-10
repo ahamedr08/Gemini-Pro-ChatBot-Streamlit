@@ -13,7 +13,6 @@ st.set_page_config(
     layout="centered",
 )
 
-# Load the Google API key from environment variables
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # Set up Google Gemini-Pro AI model
@@ -40,8 +39,7 @@ if not st.session_state.welcome_shown:
 
 # Display the chat history
 for message in st.session_state.chat_session.history:
-    role = translate_role_for_streamlit(message.role)
-    with st.chat_message(role):
+    with st.chat_message(translate_role_for_streamlit(message.role)):
         st.markdown(message.parts[0].text)
 
 # Input field for user's message
